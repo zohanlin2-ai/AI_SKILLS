@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.3.0] - 2026-06-11
+
+### Added
+- **andrej-karpathy-skills**: Added `Section 11: Testing and Verification Standards` establishing strict rules for Unit/Integration tests, Edge/Boundary cases, Fault Tolerance, and Regression/Manual verification.
+- **README.md**: Added `Testing & Verification Standards` to the key features list.
+
 ## [1.2.0] - 2026-06-11
 
 ### Changed

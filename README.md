@@ -31,6 +31,7 @@ Practical rules and behavioral guidelines (inspired by Andrej Karpathy's LLM pro
   * **Simplicity First**: Deliver minimal code to solve the core problem; avoid premature or speculative abstractions.
   * **Goal-Driven Execution**: Define clear success criteria and loop until verified.
   * **Security-First Check**: Prohibit plaintext keys and perform basic validation check for SQL injection/XSS vulnerabilities.
+  * **Testing & Verification Standards**: Define strict standards for unit/integration testing, edge cases/boundaries, fault tolerance, and regression checks.
 
 ### 3. [github_AI_SKILLS](file:///C:/Users/zohanlin/Documents/AI_SKILLS/github_AI_SKILLS/SKILL.md)
 The Standard Operating Procedure (SOP) guiding how developers and AI agents upload, update, and manage codebases within this specific repository.

@@ -152,5 +152,29 @@ The cost of false confidence is much higher than the cost of admitting uncertain
 
 ---
 
+## 11. Testing and Verification Standards
+
+**Never assume code works. Prove it through structured testing.**
+
+### 11.1 Test Levels
+- **Unit Testing**: Proactively write or update unit tests for any new or modified core business logic (e.g., algorithms, utilities, helpers).
+- **Integration Testing**: Test communication paths between components, databases, and external APIs to ensure end-to-end data integrity.
+
+### 11.2 Test Cases & Boundaries
+- **Edge Case Analysis**: Test a minimum of three boundary conditions for every logic change:
+  - Empty states (empty arrays, strings, objects).
+  - Null, undefined, or missing values.
+  - Extreme values (maximum, minimum, negative numbers, overflow).
+
+### 11.3 Fault Tolerance & Error Handling
+- Mock database failures or API timeouts to verify that `try-catch` blocks execute correctly.
+- Ensure the application displays graceful error messages instead of crashing.
+
+### 11.4 Regression & Manual Checks
+- **Regression Testing**: Re-run the existing test suite to ensure the changes did not break other parts of the application.
+- **Manual Verification**: For UI/UX changes without automated tests, define and execute a step-by-step checklist across different viewport sizes (RWD).
+
+---
+
 **These guidelines are working if:**
 diffs are smaller, unnecessary rewrites are rarer, clarifying questions appear before risky implementation, user changes remain protected, and uncertainty is stated before it turns into hallucination.
