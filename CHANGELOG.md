@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.1.0] - 2026-06-11
+
+### Changed
+- **github_AI_SKILLS**: Updated `SKILL.md` to incorporate root `README.md` and `CHANGELOG.md` verification, generation, description comparison, and update logic during the upload workflow.
+
 ## [1.0.0] - 2026-06-11
 
 ### Added

@@ -36,7 +36,7 @@ The Standard Operating Procedure (SOP) guiding how developers and AI agents uplo
 * **Key Features**:
   * Branching scenario guidance (Initial Setup/Empty Repo vs Existing Content Repo).
   * Conflict resolution steps (interactive prompts to pull, push, or cancel).
-  * Naming conventions and automatic root-level `README.md` index maintenance rules.
+  * Naming conventions, automatic root-level `README.md` index maintenance, and `CHANGELOG.md` verification rules.
 
 ---
 
