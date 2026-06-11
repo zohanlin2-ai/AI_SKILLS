@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.2.0] - 2026-06-11
+
+### Changed
+- **andrej-karpathy-skills**: Added `Section 10: Security-First Check` to ensure AI agents avoid plaintext keys and verify input security (SQL injection/XSS).
+- **README.md**: Updated key features under the `andrej-karpathy-skills` section.
+
 ## [1.1.0] - 2026-06-11
 
 ### Changed

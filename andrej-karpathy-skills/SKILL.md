@@ -143,5 +143,14 @@ The cost of false confidence is much higher than the cost of admitting uncertain
 
 ---
 
+## 10. Security-First Check
+
+**Prioritize security of keys and inputs at all stages.**
+
+- Explicitly prohibit the presence of any plaintext credentials, API keys, tokens, or passwords in source code.
+- Always check for potential security vulnerabilities like SQL injection or XSS when handling user inputs.
+
+---
+
 **These guidelines are working if:**
 diffs are smaller, unnecessary rewrites are rarer, clarifying questions appear before risky implementation, user changes remain protected, and uncertainty is stated before it turns into hallucination.

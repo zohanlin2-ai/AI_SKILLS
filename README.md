@@ -30,6 +30,7 @@ Practical rules and behavioral guidelines (inspired by Andrej Karpathy's LLM pro
   * **Surgical Changes**: Touch only what is necessary; match existing styling without arbitrary refactoring.
   * **Simplicity First**: Deliver minimal code to solve the core problem; avoid premature or speculative abstractions.
   * **Goal-Driven Execution**: Define clear success criteria and loop until verified.
+  * **Security-First Check**: Prohibit plaintext keys and perform basic validation check for SQL injection/XSS vulnerabilities.
 
 ### 3. [github_AI_SKILLS](file:///C:/Users/zohanlin/Documents/AI_SKILLS/github_AI_SKILLS/SKILL.md)
 The Standard Operating Procedure (SOP) guiding how developers and AI agents upload, update, and manage codebases within this specific repository.
