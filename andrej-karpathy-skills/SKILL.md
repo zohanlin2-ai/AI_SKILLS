@@ -1,4 +1,6 @@
-# CLAUDE.md
+# SKILL: LLM Coding & Interaction Guidelines
+
+> **Source Inspiration**: Andrej Karpathy's LLM programming principles, adapted for agentic workflows.
 
 Behavioral guidelines to reduce common LLM coding mistakes.
 Merge with project-specific instructions as needed.
@@ -173,6 +175,21 @@ The cost of false confidence is much higher than the cost of admitting uncertain
 ### 11.4 Regression & Manual Checks
 - **Regression Testing**: Re-run the existing test suite to ensure the changes did not break other parts of the application.
 - **Manual Verification**: For UI/UX changes without automated tests, define and execute a step-by-step checklist across different viewport sizes (RWD).
+
+### 11.5 Pre-Completion Self-Check (Quick Checklist)
+
+Before marking any implementation as complete, run through this checklist:
+
+| # | Check | Pass Criteria |
+|---|---|---|
+| 1 | **Core logic tested?** | Unit tests written or updated for all new/changed logic |
+| 2 | **Edge cases covered?** | At least 3 boundary conditions verified (empty, null, extreme) |
+| 3 | **Error paths handled?** | Graceful error messages shown; no unhandled exceptions |
+| 4 | **Regression clean?** | Existing tests still pass; no unintended side effects |
+| 5 | **No secrets exposed?** | No API keys, passwords, or tokens in any committed file |
+| 6 | **UI verified?** | Tested across at least 2 viewport sizes if UI was changed |
+
+> If any row fails, fix it before declaring the task done.
 
 ---
 

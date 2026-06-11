@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LLM Coding Guidelines & Prompt Helper</title>
+    <!-- Modern Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-color: #0d0f12;
+            --surface-color: #14181f;
+            --card-color: #1b212c;
+            --primary: #4f46e5;
+            --primary-glow: rgba(79, 70, 229, 0.4);
+            --accent: #06b6d4;
+            --accent-glow: rgba(6, 182, 212, 0.4);
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --border-color: rgba(255, 255, 255, 0.08);
+            --radius-lg: 16px;
+            --radius-md: 12px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: 'Outfit', sans-serif;
+            line-height: 1.6;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(79, 70, 229, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(6, 182, 212, 0.1) 0px, transparent 50%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 32px;
+        }
+
+        @media (max-width: 1024px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Hero Header */
+        header {
+            grid-column: 1 / -1;
+            margin-bottom: 24px;
+            text-align: center;
+            padding: 40px;
+            background: linear-gradient(135deg, rgba(20, 24, 31, 0.8), rgba(27, 33, 44, 0.8));
+            backdrop-filter: blur(12px);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            background: linear-gradient(90deg, #ffffff, #9ca3af);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* Rules Section */
+        .rules-column {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .rule-card {
+            background: rgba(20, 24, 31, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .rule-card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(79, 70, 229, 0.4);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3), 0 0 15px rgba(79, 70, 229, 0.05);
+        }
+
+        .rule-card.active {
+            border-color: var(--accent);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4), 0 0 20px rgba(6, 182, 212, 0.1);
+        }
+
+        .rule-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+        }
+
+        .rule-title-group {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .rule-number {
+            background: rgba(79, 70, 229, 0.1);
+            color: var(--accent);
+            border: 1px solid rgba(6, 182, 212, 0.3);
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .rule-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .rule-badge {
+            font-size: 0.75rem;
+            padding: 4px 10px;
+            border-radius: 20px;
+            background: rgba(6, 182, 212, 0.15);
+            color: var(--accent);
+            border: 1px solid rgba(6, 182, 212, 0.2);
+            font-weight: 500;
+        }
+
+        .rule-toggle-icon {
+            color: var(--text-muted);
+            transition: var(--transition);
+        }
+
+        .rule-card.expanded .rule-toggle-icon {
+            transform: rotate(180deg);
+            color: var(--accent);
+        }
+
+        .rule-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: var(--transition);
+            opacity: 0;
+            margin-top: 0;
+        }
+
+        .rule-card.expanded .rule-content {
+            max-height: 500px;
+            opacity: 1;
+            margin-top: 20px;
+            padding-top: 16px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .rule-content p.quote {
+            font-style: italic;
+            color: var(--accent);
+            margin-bottom: 16px;
+            border-left: 2px solid var(--accent);
+            padding-left: 12px;
+            font-size: 0.95rem;
+        }
+
+        .rule-content ul {
+            list-style: none;
+            padding-left: 4px;
+        }
+
+        .rule-content li {
+            position: relative;
+            padding-left: 24px;
+            margin-bottom: 10px;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .rule-content li::before {
+            content: "\f00c";
+            font-family: "Font Awesome 5 Free";
+            font-weight: 900;
+            position: absolute;
+            left: 0;
+            top: 2px;
+            color: var(--primary);
+            font-size: 0.8rem;
+        }
+
+        /* Sidebar Selector & Prompt Builder */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            position: sticky;
+            top: 40px;
+            height: fit-content;
+        }
+
+        .sidebar-card {
+            background: rgba(20, 24, 31, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+        }
+
+        .sidebar-card h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sidebar-card h3 i {
+            color: var(--primary);
+        }
+
+        .bulk-actions {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .btn-outline {
+            flex: 1;
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 8px 12px;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: rgba(79, 70, 229, 0.05);
+        }
+
+        .select-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 280px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        /* Customize scrollbar */
+        .select-list::-webkit-scrollbar {
+            width: 6px;
+        }
+        .select-list::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .select-list::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.02);
+            padding: 10px 14px;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: var(--transition);
+            user-select: none;
+            border: 1px solid transparent;
+        }
+
+        .checkbox-container:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .checkbox-container input {
+            display: none;
+        }
+
+        .custom-checkbox {
+            width: 18px;
+            height: 18px;
+            border: 2px solid var(--text-muted);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .checkbox-container input:checked + .custom-checkbox {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .checkbox-container input:checked + .custom-checkbox::before {
+            content: "\f00c";
+            font-family: "Font Awesome 5 Free";
+            font-weight: 900;
+            color: white;
+            font-size: 0.65rem;
+        }
+
+        .checkbox-label {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            transition: var(--transition);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .checkbox-container input:checked ~ .checkbox-label {
+            color: #ffffff;
+        }
+
+        /* Prompt Output area */
+        .prompt-box {
+            position: relative;
+            margin-top: 12px;
+        }
+
+        .prompt-textarea {
+            width: 100%;
+            height: 180px;
+            background: #07090c;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 14px;
+            color: #10b981;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            resize: none;
+            outline: none;
+            transition: var(--transition);
+        }
+
+        .prompt-textarea:focus {
+            border-color: var(--primary);
+        }
+
+        .btn-primary {
+            width: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);
+        }
+
+        .btn-primary:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(79, 70, 229, 0.4);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        /* Copy Toast */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: rgba(16, 185, 129, 0.95);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-weight: 500;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            transition: var(--transition);
+            opacity: 0;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Hero Header -->
+        <header>
+            <h1>Andrej Karpathy's LLM Coding Guidelines</h1>
+            <p>An interactive guide and custom system prompt generator built to optimize LLM assistance, minimize hallucinations, enforce precision changes, and guarantee rigorous verification.</p>
+        </header>
+
+        <!-- Main Column: Guidelines -->
+        <main class="rules-column">
+            <!-- Rule 1 -->
+            <div class="rule-card" onclick="toggleCard(this)" data-id="1">
+                <div class="rule-header">
+                    <div class="rule-title-group">
+                        <div class="rule-number">1</div>
+                        <div class="rule-title">Think Before Coding</div>
+                    </div>
+                    <span class="rule-badge">Planning</span>
+                    <i class="fas fa-chevron-down rule-toggle-icon"></i>
+                </div>
+                <div class="rule-content" onclick="event.stopPropagation()">
+                    <p class="quote">"Don't assume silently. Don't hide confusion. Surface tradeoffs when they matter."</p>
+                    <ul>
+                        <li>State material assumptions briefly before making modifications.</li>
+                        <li>If multiple interpretations exist that lead to different outcomes, stop and clarify.</li>
+                        <li>If a simpler approach exists, suggest it immediately and push back if necessary.</li>
+                        <li>One clarifying question before a risky change beats ten hotfixes afterwards.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Rule 2 -->
+            <div class="rule-card" onclick="toggleCard(this)" data-id="2">
+                <div class="rule-header">
+                    <div class="rule-title-group">
+                        <div class="rule-number">2</div>
+                        <div class="rule-title">Understand Before Touching</div>
+                    </div>
+                    <span class="rule-badge">Research</span>
+                    <i class="fas fa-chevron-down rule-toggle-icon"></i>
+                </div>
+                <div class="rule-content" onclick="event.stopPropagation()">
+                    <p class="quote">"For non-trivial changes, show that you understand what's already there before writing new code."</p>
+                    <ul>
+                        <li>Briefly describe the relevant component of the codebase before modifying it.</li>
+                        <li>Flag any inconsistencies, dead sections, or structural surprises.</li>
+                        <li>Ask for confirmation only when misunderstanding would be costly or hard to reverse.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Rule 3 -->
+            <div class="rule-card" onclick="toggleCard(this)" data-id="3">
+                <div class="rule-header">
+                    <div class="rule-title-group">
+                        <div class="rule-number">3</div>
+                        <div class="rule-title">Simplicity First</div>
+                    </div>
+                    <span class="rule-badge">Architecture</span>
+                    <i class="fas fa-chevron-down rule-toggle-icon"></i>
+                </div>
+                <div class="rule-content" onclick="event.stopPropagation()">
+                    <p class="quote">"Minimum code that solves the problem. Nothing speculative."</p>
+                    <ul>
+                        <li>Implement no extra features beyond what was explicitly requested.</li>
+                        <li>Do not introduce premature abstractions or configurations for single-use logic.</li>
+                        <li>Keep the codebase clean: "Would a senior engineer say this is overcomplicated?" If yes, simplify.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Rule 4 -->
+            <div class="rule-card" onclick="toggleCard(this)" data-id="4">
+                <div class="rule-header">
+                    <div class="rule-title-group">
+                        <div class="rule-number">4</div>
+                        <div class="rule-title">Surgical Changes</div>
+                    </div>
+                    <span class="rule-badge">Implementation</span>
+                    <i class="fas fa-chevron-down rule-toggle-icon"></i>
+                </div>
+                <div class="rule-content" onclick="event.stopPropagation()">
+                    <p class="quote">"Touch only what you must. Clean up only your own mess."</p>
+                    <ul>
+                        <li>Do not format, improve, or refactor adjacent or unrelated code blocks.</li>
+                        <li>Strictly match the style, linting, and naming patterns of the surrounding file.</li>
+                        <li>Remove all imports, functions, and variables orphaned by your edits.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Rule 5 -->
+            <div class="rule-card" onclick="toggleCard(this)" data-id="5">
+                <div class="rule-header">
+                    <div class="rule-title-group">
+                        <div class="rule-number">5</div>
+                        <div class="rule-title">Preserve User Work</div>
+                    </div>
+                    <span class="rule-badge">Safety</span>
+                    <i class="fas fa-chevron-down rule-toggle-icon"></i>
+                </div>
+                <div class="rule-content" onclick="event.stopPropagation()">
+                    <p class="quote">"Never overwrite, revert, or clean up changes you did not make unless explicitly asked."</p>
+                    <ul>
+                        <li>Scan for uncommitted files or unexpected local diffs before applying changes.</li>
+                        <li>Treat local changes as user intent; work around them or ask for confirmation first.</li>
+                        <li>Avoid executing destructive commands like resets or checkout reverts.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Rule 6 -->
+            <div class="rule-card" onclick="toggleCard(this)" data-id="6">
+                <div class="rule-header">
+                    <div class="rule-title-group">
+                        <div class="rule-number">6</div>
+                        <div class="rule-title">Goal-Driven Execution</div>
+                    </div>
+                    <span class="rule-badge">Verification</span>
+                    <i class="fas fa-chevron-down rule-toggle-icon"></i>
+                </div>
+                <div class="rule-content" onclick="event.stopPropagation()">
+                    <p class="quote">"Define success criteria. Loop until verified."</p>
+                    <ul>
+                        <li>Transform abstract tasks into verifiable metrics before starting work.</li>
+                        <li>Formulate steps and describe how each phase will be validated.</li>
+                        <li>Iterate dynamically: fix a bug, run a validation loop, and verify results.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Rule 7 -->
+            <div class="rule-card" onclick="toggleCard(this)" data-id="7">
+                <div class="rule-header">
+                    <div class="rule-title-group">
+                        <div class="rule-number">7</div>
+                        <div class="rule-title">Know When You're Stuck</div>
+                    </div>
+                    <span class="rule-badge">Communication</span>
+                    <i class="fas fa-chevron-down rule-toggle-icon"></i>
+                </div>
+                <div class="rule-content" onclick="event.stopPropagation()">
+                    <p class="quote">"Don't loop silently. Escalate early."</p>
+                    <ul>
+                        <li>If a bug isn't resolved after two attempts, stop trying arbitrary fixes.</li>
+                        <li>Describe exactly what you observed, what you don't understand, and the next options.</li>
+                        <li>Avoid wasting user time. "I'm not sure" is more useful than a third wrong attempt.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Rule 8 -->
+            <div class="rule-card" onclick="toggleCard(this)" data-id="8">
+                <div class="rule-header">
+                    <div class="rule-title-group">
+                        <div class="rule-number">8</div>
+                        <div class="rule-title">Be Honest About Uncertainty</div>
+                    </div>
+                    <span class="rule-badge">Quality</span>
+                    <i class="fas fa-chevron-down rule-toggle-icon"></i>
+                </div>
+                <div class="rule-content" onclick="event.stopPropagation()">
+                    <p class="quote">"Confident tone is not the same as a correct answer."</p>
+                    <ul>
+                        <li>State uncertainty explicitly if unsure about a framework, library, API, or system behavior.</li>
+                        <li>Never guess with false confidence; phrase ambiguous claims cautiously.</li>
+                        <li>Always flags potential legacy issues or outdated model knowledge.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Rule 9 -->
+            <div class="rule-card" onclick="toggleCard(this)" data-id="9">
+                <div class="rule-header">
+                    <div class="rule-title-group">
+                        <div class="rule-number">9</div>
+                        <div class="rule-title">Communicate Efficiently</div>
+                    </div>
+                    <span class="rule-badge">Communication</span>
+                    <i class="fas fa-chevron-down rule-toggle-icon"></i>
+                </div>
+                <div class="rule-content" onclick="event.stopPropagation()">
+                    <p class="quote">"Actions over narration. Signal, don't perform."</p>
+                    <ul>
+                        <li>Avoid lengthy, step-by-step descriptions of obvious or trivial edits.</li>
+                        <li>Lead with the results first, followed by necessary high-level technical justifications.</li>
+                        <li>Summarize the completed tasks and verification steps clearly upon completion.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Rule 10 -->
+            <div class="rule-card" onclick="toggleCard(this)" data-id="10">
+                <div class="rule-header">
+                    <div class="rule-title-group">
+                        <div class="rule-number">10</div>
+                        <div class="rule-title">Security-First Check</div>
+                    </div>
+                    <span class="rule-badge">Security</span>
+                    <i class="fas fa-chevron-down rule-toggle-icon"></i>
+                </div>
+                <div class="rule-content" onclick="event.stopPropagation()">
+                    <p class="quote">"Prioritize security of keys and inputs at all stages."</p>
+                    <ul>
+                        <li>Strictly prohibit any hardcoded secrets, credentials, or API keys in code.</li>
+                        <li>Perform strict validation checks on sensitive inputs to prevent SQL Injection and XSS vulnerabilities.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Rule 11 -->
+            <div class="rule-card" onclick="toggleCard(this)" data-id="11">
+                <div class="rule-header">
+                    <div class="rule-title-group">
+                        <div class="rule-number">11</div>
+                        <div class="rule-title">Testing & Verification Standards</div>
+                    </div>
+                    <span class="rule-badge">Testing</span>
+                    <i class="fas fa-chevron-down rule-toggle-icon"></i>
+                </div>
+                <div class="rule-content" onclick="event.stopPropagation()">
+                    <p class="quote">"Never assume code works. Prove it through structured testing."</p>
+                    <ul>
+                        <li><strong>Unit & Integration:</strong> Write unit tests for business utilities and integration tests for external communications.</li>
+                        <li><strong>Edge/Boundary Testing:</strong> Test at least 3 edge cases (e.g., empty arrays, null variables, maximum limits).</li>
+                        <li><strong>Fault Tolerance:</strong> Verify error recovery (try-catch blocks) by mocking DB/network failures.</li>
+                        <li><strong>Regression & Manual:</strong> Perform regression runs and establish a manual RWD layout checklist for visual components.</li>
+                    </ul>
+                </div>
+            </div>
+        </main>
+
+        <!-- Sidebar Panel: Prompt Generator -->
+        <aside class="sidebar">
+            <!-- Step Selector -->
+            <div class="sidebar-card">
+                <h3><i class="fas fa-sliders"></i> Guideline Selector</h3>
+                <div class="bulk-actions">
+                    <button class="btn-outline" onclick="selectAll(true)">Select All</button>
+                    <button class="btn-outline" onclick="selectAll(false)">Clear All</button>
+                </div>
+                <div class="select-list" id="selectList">
+                    <!-- Dynamic Checklist will be rendered here -->
+                </div>
+            </div>
+
+            <!-- Prompt Output -->
+            <div class="sidebar-card">
+                <h3><i class="fas fa-terminal"></i> System Prompt</h3>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px;">Inject these rules into your AI agent configuration or chat session:</p>
+                <div class="prompt-box">
+                    <textarea class="prompt-textarea" id="promptTextarea" readonly></textarea>
+                </div>
+                <button class="btn-primary" style="margin-top: 16px;" onclick="copyPrompt()">
+                    <i class="fas fa-copy"></i> Copy Prompt
+                </button>
+            </div>
+        </aside>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <i class="fas fa-circle-check"></i> System Prompt Copied to Clipboard!
+    </div>
+
+    <script>
+        const rulesData = [
+            { id: 1, name: "Think Before Coding", rule: "THINK BEFORE CODING:\n- Do not assume silently. State your material assumptions briefly.\n- Ask clarifying questions before making risky or ambiguous changes." },
+            { id: 2, name: "Understand Before Touching", rule: "UNDERSTAND BEFORE TOUCHING:\n- Briefly explain your understanding of the relevant codebase structure before modifying it." },
+            { id: 3, name: "Simplicity First", rule: "SIMPLICITY FIRST:\n- Deliver the absolute minimum code to solve the request. Avoid premature abstractions or speculative features." },
+            { id: 4, name: "Surgical Changes", rule: "SURGICAL CHANGES:\n- Focus your edits strictly on what is required. Do not clean up or refactor adjacent, unrelated logic." },
+            { id: 5, name: "Preserve User Work", rule: "PRESERVE USER WORK:\n- Never revert, overwrite, or clean up changes made by the user unless explicitly instructed." },
+            { id: 6, name: "Goal-Driven Execution", rule: "GOAL-DRIVEN EXECUTION:\n- Define success criteria and loop/validate incrementally to verify your work." },
+            { id: 7, name: "Know When Stuck", rule: "KNOW WHEN STUCK:\n- If a solution isn't found in two serious attempts, stop looping. Clearly explain the details and request feedback." },
+            { id: 8, name: "Be Honest about Uncertainty", rule: "BE HONEST ABOUT UNCERTAINTY:\n- Acknowledge when you are unsure about API features or versions. Do not hallucinate package capabilities." },
+            { id: 9, name: "Communicate Efficiently", rule: "COMMUNICATE EFFICIENTLY:\n- Keep updates short. Focus on outcomes. Avoid writing long paragraphs explaining obvious changes." },
+            { id: 10, name: "Security-First Check", rule: "SECURITY-FIRST CHECK:\n- Avoid hardcoded credentials, API keys, or secrets.\n- Prevent SQL injection and XSS errors when handling inputs." },
+            { id: 11, name: "Testing & Verification", rule: "TESTING & VERIFICATION STANDARDS:\n- Run builds/tests locally.\n- Test unit logic, boundary states (empty, null, extreme limits), mocked errors, and regressions." }
+        ];
+
+        // Initialize Selector Checklist
+        const selectList = document.getElementById('selectList');
+        rulesData.forEach(rule => {
+            const label = document.createElement('label');
+            label.className = 'checkbox-container';
+            label.innerHTML = `
+                <input type="checkbox" data-id="${rule.id}" checked onchange="updatePrompt()">
+                <div class="custom-checkbox"></div>
+                <div class="checkbox-label" title="${rule.name}">${rule.name}</div>
+            `;
+            selectList.appendChild(label);
+        });
+
+        // Toggle Expand/Collapse Cards
+        function toggleCard(card) {
+            const allCards = document.querySelectorAll('.rule-card');
+            const clickedId = card.getAttribute('data-id');
+            
+            allCards.forEach(c => {
+                if(c !== card) {
+                    c.classList.remove('expanded');
+                    c.classList.remove('active');
+                }
+            });
+            
+            card.classList.toggle('expanded');
+            card.classList.toggle('active');
+        }
+
+        // Select All / Clear All
+        function selectAll(state) {
+            const checkboxes = selectList.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach(cb => {
+                cb.checked = state;
+            });
+            updatePrompt();
+        }
+
+        // Build and display Prompt
+        function updatePrompt() {
+            const checkboxes = selectList.querySelectorAll('input[type="checkbox"]');
+            let selectedRules = [];
+            
+            checkboxes.forEach(cb => {
+                if (cb.checked) {
+                    const id = parseInt(cb.getAttribute('data-id'));
+                    const ruleObj = rulesData.find(r => r.id === id);
+                    if (ruleObj) selectedRules.push(ruleObj.rule);
+                }
+            });
+
+            const textarea = document.getElementById('promptTextarea');
+            if (selectedRules.length === 0) {
+                textarea.value = "# No rules selected.\nSelect rules in the list to generate your system prompt.";
+                return;
+            }
+
+            textarea.value = `You must adhere to the following developer guidelines:\n\n${selectedRules.join('\n\n')}`;
+        }
+
+        // Copy Clipboard & show Toast
+        function copyPrompt() {
+            const textarea = document.getElementById('promptTextarea');
+            textarea.select();
+            document.execCommand('copy');
+            window.getSelection().removeAllRanges();
+
+            const toast = document.getElementById('toast');
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2500);
+        }
+
+        // Initial setup
+        updatePrompt();
+    </script>
+</body>
+</html>

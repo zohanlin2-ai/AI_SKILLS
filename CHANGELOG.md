@@ -7,7 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.5.0] - 2026-06-11
+
+### Added
+- **prompt_engineering**: New `SKILL.md` covering LLM prompt engineering patterns — system prompt design, output format control (JSON/Markdown), few-shot and Chain-of-Thought usage decision tables, prompt version management, and a 6-row common pitfalls table.
+- **python_architecture**: New `SKILL.md` covering general-purpose Python project architecture — directory structure principles, entry point design (Launcher+Core pattern), plugin/extension architecture (BaseClass+Registry), inter-module communication patterns, dependency management, and a 7-row design pitfalls table.
+- **local_ai_model**: New `SKILL.md` covering local AI model management — framework selection (Diffusers, llama.cpp, Ollama, Transformers), VRAM management strategy, model loading patterns (singleton), precision tradeoffs (fp32/fp16/int4), long-running inference stability, and a 9-row pitfalls table.
+- **logging_debugging**: New `SKILL.md` covering logging and debugging for complex Python apps — log design principles, loguru vs standard logging comparison, log level semantics, multithreaded logging setup, structured output, debugging strategies, and a 9-row pitfalls table.
+
+### Changed
+- **github_AI_SKILLS**: Added Section 4 (Conventional Commits message convention), Section 5 (pre-upload `.gitignore` checklist), and a Workflow Model note explaining why PR conventions are intentionally omitted.
+- **andrej-karpathy-skills**: Fixed misleading `# CLAUDE.md` title to `# SKILL: LLM Coding & Interaction Guidelines`; added Section 11.5 Pre-Completion Self-Check table.
+- **UML_seq_act**: Extended Section 3 with a 4-type Diagram Quick Reference table (Sequence, Activity, Class, State); added `[!TIP]` cross-reference in Section 8 pointing to the full interactive editor.
+- **README.md**: Updated Project Index and detailed overviews to include all 7 SKILL directories.
+
 ## [1.4.0] - 2026-06-11
+
 
 ### Changed
 - **UML_seq_act**: Updated `SKILL.md` to document the layout overflow top-clipping fix, zoom controls implementation, and sequence vs. activity diagram selection rationales.

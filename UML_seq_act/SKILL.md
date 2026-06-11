@@ -32,6 +32,18 @@ When the goal is to document the **internal decision-making flow of a single fun
 - An Activity Diagram makes every decision node (`{}`) and process node (`[]`) immediately clear, with color-coded styling to instantly highlight high-risk operations such as VRAM garbage collection and VAE precision casting.
 - **Rule of thumb**: Use Activity Diagrams (flowcharts) to model sequential data pipelines, logical decision branches (If-Else gates), scheduled loops (e.g. background polling timers), and single-component state machines.
 
+### Diagram Type Quick Reference
+
+| Diagram Type | Mermaid Keyword | Best For | Rule of Thumb |
+|---|---|---|---|
+| **Sequence Diagram** | `sequenceDiagram` | Cross-component async communication, API call chains, thread lifecycle | Use when "who calls whom, in what order" matters |
+| **Activity Diagram** | `flowchart TD` | Internal logic flow, decision branches, state machines | Use when "what decisions does this module make" matters |
+| **Class Diagram** | `classDiagram` | OOP structure, inheritance hierarchies, interface contracts | Use when documenting class relationships and data schemas |
+| **State Diagram** | `stateDiagram-v2` | Object lifecycle, UI component state transitions, finite automata | Use when an entity moves through discrete named states |
+
+> [!NOTE]
+> Class Diagrams and State Diagrams are currently not covered in this skill document. If you need to add those diagram types to a project, expand this section with syntax examples following the same format as Sections 4.1 and 4.2.
+
 ---
 
 ## 4. Mermaid Syntax Deep Dive
@@ -179,6 +191,10 @@ mermaid.initialize({
 ## 8. Reusable Template
 
 The following is the standard reusable HTML host template for Mermaid diagrams, featuring real-time zoom controls and layout fixes to prevent clipping when diagrams are large:
+
+> [!TIP]
+> The template below is a **static viewer** (paste-and-view). For a fully interactive experience with a **live code editor + side-by-side preview + PNG/SVG export**, use the complete editor tool located at:
+> `C:\Users\zohanlin\Documents\zohan_ai_test\Ann\UML.html`
 
 ```html
 <!DOCTYPE html>

@@ -6,6 +6,7 @@ This document defines the standardized SOP for uploading and managing projects w
 - **Default Repository**: `https://github.com/zohanlin2-ai/AI_SKILLS.git`
 - **Structure Principle**: Multi-project architecture. Each project must reside in its own subdirectory named after its original folder.
 - **Root Documentation**: The root `README.md` serves as a project index and must be maintained in **English**.
+- **Workflow Model**: This is a **single-maintainer repository** managed by the owner and AI agents. The standard workflow is direct push to `main` — no Pull Request (PR) process is defined or required. PRs should only be introduced if the repository opens to external contributors or integrates CI/CD pipelines that require pre-merge validation.
 
 ## 2. Standard Workflow (SOP)
 
@@ -58,4 +59,55 @@ Before making any staging or commit operations, verify and manage the root docum
 - **Safety**: Never perform a `force push` or major structural change without explicit user confirmation when a project already exists on the remote.
 
 ---
+
+## 4. Commit Message Convention
+
+All commit messages must follow the **Conventional Commits** format:
+
+```
+<type>(<scope>): <short summary>
+```
+
+| Type | When to Use |
+|---|---|
+| `feat` | Adding a new skill document, tool, or feature |
+| `fix` | Correcting errors in an existing document or script |
+| `docs` | Updating README, CHANGELOG, or documentation only |
+| `refactor` | Restructuring content without changing meaning |
+| `chore` | Maintenance tasks (e.g., updating .gitignore, reorganizing folders) |
+
+**Examples:**
+```
+feat(UML_seq_act): add zoom controls and layout overflow fix to SKILL.md
+fix(andrej-karpathy-skills): correct CLAUDE.md title to proper skill heading
+docs(root): update README project index with new UML_seq_act description
+```
+
+**Rules:**
+- Summary must be in **English**, present tense, lowercase after the colon.
+- Keep the summary under **72 characters**.
+- Do NOT use a period at the end of the summary line.
+
+---
+
+## 5. Pre-Upload .gitignore Checklist
+
+Before staging any files, verify that the following are excluded via `.gitignore` (or not present in the working directory):
+
+| Category | Patterns to Exclude |
+|---|---|
+| Python artifacts | `__pycache__/`, `*.pyc`, `*.pyo`, `*.pyd`, `.Python` |
+| Environment files | `.env`, `.env.*`, `*.env` |
+| Virtual environments | `venv/`, `.venv/`, `env/`, `.conda/` |
+| IDE configs | `.vscode/`, `.idea/`, `*.suo`, `*.user` |
+| OS files | `.DS_Store`, `Thumbs.db`, `desktop.ini` |
+| Build outputs | `dist/`, `build/`, `*.egg-info/`, `node_modules/` |
+| Secrets / Keys | Any file containing API keys, tokens, or passwords |
+
+> [!CAUTION]
+> **Never commit plaintext credentials.** If an API key or `.env` file was accidentally staged, immediately remove it with `git rm --cached <file>` before pushing.
+
+---
+
 *Created by Antigravity AI Assistant.*
+
