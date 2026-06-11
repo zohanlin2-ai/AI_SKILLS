@@ -20,8 +20,8 @@ Welcome to the **AI_SKILLS** repository. This workspace serves as a structured c
 A comprehensive guide on creating high-quality system architecture diagrams (Sequence and Activity diagrams) using Mermaid.js syntax. 
 * **Key Features**:
   * Step-by-step instructions for Mermaid syntax.
-  * Common pitfalls and resolutions (e.g., blank exports, transparent backgrounds, subgraph rendering errors).
-  * Client-side HTML wrapper template that renders and exports SVGs into high-resolution, crisp 2x supersampled PNGs using Canvas API.
+  * Common pitfalls and resolutions (e.g., blank exports, transparent backgrounds, subgraph rendering, and layout overflow scaling fixes).
+  * Client-side HTML wrapper template that renders and exports SVGs into high-resolution, crisp 2x supersampled PNGs with zoom controls using Canvas API.
 
 ### 2. [andrej-karpathy-skills](file:///C:/Users/zohanlin/Documents/AI_SKILLS/andrej-karpathy-skills/SKILL.md)
 Practical rules and behavioral guidelines (inspired by Andrej Karpathy's LLM programming style) to minimize typical coding and alignment errors.

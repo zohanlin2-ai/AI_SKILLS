@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.4.0] - 2026-06-11
+
+### Changed
+- **UML_seq_act**: Updated `SKILL.md` to document the layout overflow top-clipping fix, zoom controls implementation, and sequence vs. activity diagram selection rationales.
+
 ## [1.3.0] - 2026-06-11
 
 ### Added

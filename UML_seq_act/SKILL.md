@@ -24,11 +24,13 @@ This skill document captures the complete end-to-end process of creating a profe
 When a system involves **cross-component, cross-thread asynchronous communication**, the Sequence Diagram is the most precise expressive tool:
 - This project's flow — `MainWindow (UI Thread)` → `GenerationWorker (QThread)` → `AIEngine` → `Diffusers GPU Pipeline` — is a textbook lifecycle delegation pattern.
 - A Sequence Diagram clearly illustrates "who calls whom at what point in time", "who waits for whom to respond", and conditional branches using `opt` and `rect` blocks.
+- **Rule of thumb**: Use Sequence Diagrams to model timelines, message dispatches, non-blocking asynchronous loops, and resource locking lifecycles (e.g., database read/write locks, background extraction threads).
 
 ### Why Activity Diagram?
 When the goal is to document the **internal decision-making flow of a single function or module**, an Activity Diagram (implemented as `flowchart TD`) is the most intuitive choice:
 - `AIEngine.generate()` internally contains complex branching logic: Chinese detection → translation validation → model switch check → safety filter toggle → two-stage decoupled generation.
 - An Activity Diagram makes every decision node (`{}`) and process node (`[]`) immediately clear, with color-coded styling to instantly highlight high-risk operations such as VRAM garbage collection and VAE precision casting.
+- **Rule of thumb**: Use Activity Diagrams (flowcharts) to model sequential data pipelines, logical decision branches (If-Else gates), scheduled loops (e.g. background polling timers), and single-component state machines.
 
 ---
 
@@ -153,6 +155,7 @@ function exportPNG(containerId, filename) {
 | Downloaded SVG has no colors when opened in browser | Missing `xmlns` attribute declaration on the SVG element | Force-set `xmlns="http://www.w3.org/2000/svg"` on the cloned SVG node before serializing |
 | `rect rgb()` color blocks do not render | Browser Content Security Policy (CSP) or Mermaid version incompatibility | Upgrade to Mermaid v10 and set `securityLevel: 'loose'` in `mermaid.initialize()` |
 | Nodes inside `subgraph` have disordered layout | External arrows connecting directly into internal subgraph nodes | Connect external arrows to the first node of the subgraph; do not bypass it to connect to intermediate internal nodes |
+| Diagram is cut off at the top when scaling or scrolling | Flexbox centering (`align-items: center`) clips elements during overflow | Replace flex layout in preview container with standard block layout (`display: block` and text alignment, and `display: inline-block` on Mermaid element) |
 
 ---
 
@@ -175,28 +178,140 @@ mermaid.initialize({
 
 ## 8. Reusable Template
 
-The following is the minimal reusable HTML host template for Mermaid diagrams:
+The following is the standard reusable HTML host template for Mermaid diagrams, featuring real-time zoom controls and layout fixes to prevent clipping when diagrams are large:
 
 ```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Diagrams</title>
+    <title>UML Diagram Viewer</title>
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { background-color: #121212; color: #E0E0E0; padding: 40px; font-family: sans-serif; }
-        .mermaid { text-align: center; }
+        body { 
+            background-color: #121212; 
+            color: #E0E0E0; 
+            margin: 0; 
+            font-family: sans-serif; 
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .preview-panel {
+            flex: 1;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .preview-content {
+            flex: 1;
+            padding: 40px;
+            overflow: auto;
+            background: #12151e;
+            display: block;
+            text-align: center;
+        }
+        .mermaid {
+            display: inline-block;
+            min-width: 100%;
+        }
+        svg {
+            width: calc(100% * var(--zoom-level, 1));
+            max-width: none;
+            height: auto;
+            filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.5));
+            transition: width 0.2s ease;
+        }
+        /* Floating Zoom Control Panel */
+        .zoom-controls {
+            position: absolute;
+            bottom: 24px;
+            right: 24px;
+            background: rgba(18, 22, 31, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            z-index: 5;
+        }
+        .zoom-btn {
+            background: transparent;
+            border: none;
+            color: #E0E0E0;
+            width: 32px;
+            height: 32px;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            transition: background 0.2s;
+        }
+        .zoom-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .zoom-indicator {
+            font-family: monospace;
+            font-size: 0.8rem;
+            color: #999;
+            padding: 0 8px;
+            min-width: 50px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
-    <div class="mermaid">
-        <!-- Paste your Mermaid code here -->
-        flowchart TD
-            A["Start"] --> B["End"]
+    <div class="preview-panel">
+        <div class="preview-content">
+            <div class="mermaid" id="diagramContainer">
+                <!-- Paste your Mermaid code here -->
+                flowchart TD
+                    A["Start"] --> B["End"]
+            </div>
+        </div>
+        
+        <!-- Zoom UI -->
+        <div class="zoom-controls">
+            <button class="zoom-btn" onclick="zoomDiagram(-0.1)" title="Zoom Out"><i class="fa-solid fa-minus"></i></button>
+            <div class="zoom-indicator" id="zoomIndicator">100%</div>
+            <button class="zoom-btn" onclick="zoomDiagram(0.1)" title="Zoom In"><i class="fa-solid fa-plus"></i></button>
+            <button class="zoom-btn" onclick="resetZoom()" title="Reset (100%)"><i class="fa-solid fa-rotate-left"></i></button>
+        </div>
     </div>
+
     <script type="module">
         import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
         mermaid.initialize({ startOnLoad: true, theme: 'dark', securityLevel: 'loose' });
+    </script>
+    <script>
+        let zoomLevel = 1.0;
+        function zoomDiagram(amount) {
+            zoomLevel = Math.max(0.3, Math.min(3.0, zoomLevel + amount));
+            applyZoom();
+        }
+        function resetZoom() {
+            zoomLevel = 1.0;
+            applyZoom();
+        }
+        function applyZoom() {
+            const svg = document.getElementById('diagramContainer').querySelector('svg');
+            if (svg) {
+                svg.style.setProperty('--zoom-level', zoomLevel);
+            }
+            document.getElementById('zoomIndicator').innerText = Math.round(zoomLevel * 100) + '%';
+        }
+        // Ensure zoom level is preserved on dynamically rendered diagrams if applicable
+        document.addEventListener("DOMContentLoaded", () => {
+            setTimeout(applyZoom, 500); // Allow Mermaid to render initially
+        });
     </script>
 </body>
 </html>
